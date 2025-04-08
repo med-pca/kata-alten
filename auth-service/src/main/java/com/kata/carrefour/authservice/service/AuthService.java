@@ -18,14 +18,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public Mono<Object> register(AuthRequest request) {
-        return userRepository.findByEmail(request.getEmail())
-                .flatMap(existingUser -> Mono.error(new RuntimeException("User already exists")))
-                .switchIfEmpty(Mono.defer(() -> {
-                    User newUser = new User(request.getEmail(), passwordEncoder.encode(request.getPassword()));
-                    return userRepository.save(newUser).map(savedUser -> jwtUtil.generateToken(savedUser.getEmail()));
-                }));
-    }
     public Mono<Object> registerAccount(AuthAccountRequest request) {
         return userRepository.findByEmail(request.getEmail())
                 .flatMap(existingUser -> Mono.error(new RuntimeException("User already exists")))
